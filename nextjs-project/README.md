@@ -34,3 +34,36 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+```mermaid
+graph TD
+  %% --- GitHub ---
+  subgraph GitHub
+    GR[GitHub リポジトリ]
+    GA[GitHub Actions]
+  end
+
+  %% --- AWS Cloud 全体 ---
+  subgraph "AWS Cloud"
+    subgraph "AWS CDK"
+      CDK[NextjsDockerInfraStack]
+    end
+    subgraph "Amazon ECR"
+      ECR[リポジトリ: nextjs-docker]
+    end
+    subgraph "IAM"
+      IAM_ROLE[AppRunnerServiceRole]
+    end
+    subgraph "App Runner"
+      AR1[nextjs-docker-app-cdk]
+    end
+  end
+
+  %% --- 関係 ---
+  GR -->|コード変更| GA
+  GA -->|ビルド & プッシュ| ECR
+  CDK -->|作成・管理| IAM_ROLE
+  CDK -->|作成・管理| AR1
+  IAM_ROLE -->|権限付与| AR1
+  ECR -->|イメージ提供| AR1
+```
